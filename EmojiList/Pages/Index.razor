@@ -1,0 +1,40 @@
+﻿@page "/"
+@using EmojiList.Models;
+@using Newtonsoft.Json;
+@inject HttpClient Http
+<PageTitle>Emojies</PageTitle>
+<div class="d-flex flex-row justify-content-center align-items-center my-3">
+
+    <img src="https://cdn.jsdelivr.net/emojione/assets/png/1f63a.png" width="32" />
+    <h1 class="fw-bold mx-3">Emoji Search</h1>
+    <img src="https://cdn.jsdelivr.net/emojione/assets/png/1f638.png" width="32" />
+</div>
+<p>
+    <MatTextField OnInput="@onInput" Value="Search" Label="Search . . ." FullWidth="true"></MatTextField>
+</p>
+<div class="px-3">
+
+    @foreach (var emoji in Emojies.Where(p => p.Title.ToLower().Contains(Search.ToLower())))
+    {
+        <div class="d-flex fs-4 my-2 justify-content-start align-items-center border-bottom">
+            <p class="me-2">@emoji.Symbol</p>
+            <p>@emoji.Title</p>
+        </div>
+    }
+
+</div>
+@code {
+    void onInput(ChangeEventArgs e)
+    {
+        Search = e.Value.ToString();
+    }
+    public string Search { get; set; } = "";
+
+    public List<Emoji> Emojies { get; set; } = new();
+    protected override async Task OnInitializedAsync()
+    {
+        Emojies = await Http.GetFromJsonAsync<List<Emoji>>("sample-data/emojies.json");
+    }
+
+
+}
